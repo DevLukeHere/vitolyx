@@ -1,10 +1,26 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
+import { GlassView, isGlassEffectAPIAvailable } from 'expo-glass-effect';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
+const useGlass = isGlassEffectAPIAvailable();
+
+function TabBarBackground() {
+  if (useGlass) {
+    return (
+      <GlassView
+        glassEffectStyle="regular"
+        style={StyleSheet.absoluteFill}
+      />
+    );
+  }
+
+  return null;
+}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -17,12 +33,20 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarStyle: {
-          backgroundColor: isDark ? Palette.charcoal : Palette.cloud,
-          borderTopColor: isDark ? Palette.gunmetal : '#DDDDDD',
-          borderTopWidth: StyleSheet.hairlineWidth,
-          elevation: 0,
-        },
+        tabBarBackground: TabBarBackground,
+        tabBarStyle: useGlass
+          ? {
+              position: 'absolute',
+              backgroundColor: 'transparent',
+              borderTopWidth: 0,
+              elevation: 0,
+            }
+          : {
+              backgroundColor: isDark ? Palette.charcoal : Palette.cloud,
+              borderTopColor: isDark ? Palette.gunmetal : '#DDDDDD',
+              borderTopWidth: StyleSheet.hairlineWidth,
+              elevation: 0,
+            },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
