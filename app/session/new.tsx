@@ -174,6 +174,7 @@ export default function NewSessionScreen() {
         <ScrollView
           className="flex-1"
           contentContainerClassName="px-4 pb-8 gap-4"
+          contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="handled"
         >
           {/* Step 1: Session details */}

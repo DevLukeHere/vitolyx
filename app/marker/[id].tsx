@@ -62,7 +62,7 @@ export default function MarkerDetailScreen() {
     <View className="flex-1 bg-surface-light dark:bg-surface-dark">
       <Stack.Screen options={{ title: marker.name }} />
 
-      <ScrollView contentContainerClassName="px-4 py-4 gap-4">
+      <ScrollView contentContainerClassName="px-4 py-4 gap-4" contentInsetAdjustmentBehavior="automatic">
         <GlassCard className="p-4 gap-2">
           <ThemedText variant="label">
             {marker.shortName} · {marker.category.replace('_', ' ')}

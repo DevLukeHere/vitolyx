@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, ActivityIndicator, Pressable } from 'react-native';
+import { View, ScrollView, Alert, ActionSheetIOS, ActivityIndicator, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 
 import { ThemedText } from '@/components/atoms/themed-text';
@@ -22,14 +22,25 @@ export default function SessionDetailScreen() {
   const { data: results, loading: resultsLoading, removeResult } = useSessionResults(sessionId);
 
   const handleDeleteResult = (resultId: string) => {
-    Alert.alert('Delete Result', 'Remove this result?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => removeResult(toResultId(resultId)),
-      },
-    ]);
+    if (process.env.EXPO_OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          title: 'Delete Result',
+          message: 'Remove this result?',
+          options: ['Cancel', 'Delete'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) removeResult(toResultId(resultId));
+        },
+      );
+    } else {
+      Alert.alert('Delete Result', 'Remove this result?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => removeResult(toResultId(resultId)) },
+      ]);
+    }
   };
 
   if (sessionLoading || resultsLoading) {
@@ -54,7 +65,7 @@ export default function SessionDetailScreen() {
     <View className="flex-1 bg-surface-light dark:bg-surface-dark">
       <Stack.Screen options={{ title: formatSessionDate(session.date) }} />
 
-      <ScrollView contentContainerClassName="px-4 py-4 gap-4">
+      <ScrollView contentContainerClassName="px-4 py-4 gap-4" contentInsetAdjustmentBehavior="automatic">
         <GlassCard className="p-4 gap-2">
           <ThemedText variant="label">Session Info</ThemedText>
           <ThemedText variant="subtitle">

@@ -47,7 +47,7 @@ jobs:
           "
 
           # Update settings screen version string
-          sed -i "s/v[0-9]*\.[0-9]*\.[0-9]* · Blood test results tracker/v${NEW_VERSION} · Blood test results tracker/" app/\(tabs\)/settings.tsx
+          sed -i "s/v[0-9]*\.[0-9]*\.[0-9]* · Blood test results tracker/v${NEW_VERSION} · Blood test results tracker/" app/\(tabs\)/settings/index.tsx
 
           echo "Bumped to $NEW_VERSION ($BUMP)"
 

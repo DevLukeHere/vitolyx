@@ -1,6 +1,6 @@
-import { View, ScrollView, Alert, Switch } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, ScrollView, Alert, ActionSheetIOS, Switch } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
+import { Stack } from 'expo-router';
 
 import { ThemedText } from '@/components/atoms/themed-text';
 import { PrimaryButton } from '@/components/atoms/primary-button';
@@ -12,7 +12,6 @@ import { createMarkerRepository } from '@/lib/repositories/marker-repository';
 import { Palette } from '@/constants/theme';
 
 export default function SettingsScreen() {
-  const insets = useSafeAreaInsets();
   const db = useSQLiteContext();
   const { data: settings, setSetting } = useSettings();
   const { data: sessions } = useSessions();
@@ -36,36 +35,53 @@ export default function SettingsScreen() {
   };
 
   const handleClearData = () => {
-    Alert.alert(
-      'Clear All Data',
-      'This will permanently delete all sessions and results. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
+    if (process.env.EXPO_OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
         {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: async () => {
-            await db.execAsync('DELETE FROM test_results');
-            await db.execAsync('DELETE FROM test_sessions');
-          },
+          title: 'Clear All Data',
+          message: 'This will permanently delete all sessions and results. This cannot be undone.',
+          options: ['Cancel', 'Clear All Data'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
         },
-      ],
-    );
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            db.execAsync('DELETE FROM test_results').then(() =>
+              db.execAsync('DELETE FROM test_sessions')
+            );
+          }
+        },
+      );
+    } else {
+      Alert.alert(
+        'Clear All Data',
+        'This will permanently delete all sessions and results. This cannot be undone.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Clear',
+            style: 'destructive',
+            onPress: async () => {
+              await db.execAsync('DELETE FROM test_results');
+              await db.execAsync('DELETE FROM test_sessions');
+            },
+          },
+        ],
+      );
+    }
   };
 
   const unitPreference = settings?.unitPreference ?? 'metric';
   const isImperial = unitPreference === 'imperial';
 
   return (
-    <View
-      className="flex-1 bg-surface-light dark:bg-surface-dark"
-      style={{ paddingTop: insets.top + 12 }}
-    >
-      <ThemedText variant="title" className="px-4 mb-6">
-        Settings
-      </ThemedText>
+    <View className="flex-1 bg-surface-light dark:bg-surface-dark">
+      <Stack.Screen options={{ title: 'Settings' }} />
 
-      <ScrollView contentContainerClassName="px-4 gap-6 pb-8">
+      <ScrollView
+        contentContainerClassName="px-4 gap-6 pb-8 pt-4"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <View className="gap-2">
           <ThemedText variant="label" className="px-1">Units</ThemedText>
           <GlassCard className="p-4">
