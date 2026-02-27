@@ -33,14 +33,16 @@ export function TrendChart({ marker, data }: TrendChartProps) {
   const values = data.map((d) => d.value);
   const minVal = Math.min(...values, marker.referenceLow);
   const maxVal = Math.max(...values, marker.referenceHigh);
-  const range = maxVal - minVal;
-  const yMin = Math.max(0, minVal - range * 0.15);
+  const range = maxVal - minVal || 1;
+  const padding = Math.max(range * 0.1, 5);
+  const yOffset = Math.floor(Math.max(0, minVal - padding));
+  const yTop = Math.ceil(maxVal + padding);
 
   const axisColor = isDark ? '#393E4640' : '#22283115';
   const labelColor = isDark ? '#888B90' : Palette.gunmetal;
 
   return (
-    <View>
+    <View style={{ overflow: 'hidden' }}>
       <LineChart
         data={chartData}
         width={chartWidth}
@@ -61,7 +63,8 @@ export function TrendChart({ marker, data }: TrendChartProps) {
         xAxisLabelTextStyle={{ color: labelColor, fontSize: 10 }}
         yAxisTextStyle={{ color: labelColor, fontSize: 10 }}
         backgroundColor="transparent"
-        yAxisOffset={Math.floor(yMin)}
+        yAxisOffset={yOffset}
+        maxValue={yTop - yOffset}
         noOfSections={4}
         rulesColor={isDark ? '#EEEEEE08' : '#22283108'}
         spacing={data.length > 1 ? chartWidth / (data.length - 1) : chartWidth / 2}
