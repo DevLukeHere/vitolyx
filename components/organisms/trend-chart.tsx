@@ -32,14 +32,19 @@ export function TrendChart({ marker, data }: TrendChartProps) {
 
   const INITIAL_SPACING = 20;
 
+  const displayUnit = data[0]?.unit ?? marker.defaultUnit;
+  const needsConversion = displayUnit !== marker.defaultUnit && marker.conversionFactor !== null;
+  const refHigh = needsConversion ? marker.referenceHigh * marker.conversionFactor! : marker.referenceHigh;
+  const refLow = needsConversion ? marker.referenceLow * marker.conversionFactor! : marker.referenceLow;
+
   const chartData = data.map((point) => ({
     value: point.value,
     label: formatChartDate(point.date),
   }));
 
   const values = data.map((d) => d.value);
-  const minVal = Math.min(...values, marker.referenceLow);
-  const maxVal = Math.max(...values, marker.referenceHigh);
+  const minVal = Math.min(...values, refLow);
+  const maxVal = Math.max(...values, refHigh);
   const range = maxVal - minVal || 1;
   const padding = Math.max(range * 0.1, 5);
   const yOffset = Math.floor(Math.max(0, minVal - padding));
@@ -87,23 +92,23 @@ export function TrendChart({ marker, data }: TrendChartProps) {
         spacing={spacing}
         referenceLinesOverChartContent={false}
         showReferenceLine1
-        referenceLine1Position={marker.referenceHigh}
+        referenceLine1Position={refHigh}
         referenceLine1Config={{
           color: '#ef4444',
           dashWidth: 6,
           dashGap: 4,
           thickness: 1,
-          labelText: String(marker.referenceHigh),
+          labelText: String(Math.round(refHigh * 10) / 10),
           labelTextStyle: { color: '#ef4444', fontSize: 10, fontWeight: '600', top: -16 },
         }}
         showReferenceLine2
-        referenceLine2Position={marker.referenceLow}
+        referenceLine2Position={refLow}
         referenceLine2Config={{
           color: '#f59e0b',
           dashWidth: 6,
           dashGap: 4,
           thickness: 1,
-          labelText: String(marker.referenceLow),
+          labelText: String(Math.round(refLow * 10) / 10),
           labelTextStyle: { color: '#f59e0b', fontSize: 10, fontWeight: '600', top: -16 },
         }}
         pointerConfig={{
