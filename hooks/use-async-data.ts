@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export type AsyncState<T> = {
   data: T | null;
@@ -15,18 +15,20 @@ export function useAsyncData<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [tick, setTick] = useState(0);
+  const hasLoaded = useRef(false);
 
   const refetch = useCallback(() => setTick((t) => t + 1), []);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
+    if (!hasLoaded.current) setLoading(true);
     setError(null);
     fetcher()
       .then((result) => {
         if (!cancelled) {
           setData(result);
           setLoading(false);
+          hasLoaded.current = true;
         }
       })
       .catch((err) => {
