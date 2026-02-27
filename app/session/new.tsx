@@ -164,7 +164,16 @@ export default function NewSessionScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'New Session' }} />
+      <Stack.Screen
+        options={{
+          title: 'New Session',
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()} hitSlop={8}>
+              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
+            </Pressable>
+          ),
+        }}
+      />
       <KeyboardAvoidingView
         className="flex-1 bg-surface-light dark:bg-surface-dark"
         behavior={process.env.EXPO_OS === 'ios' ? 'padding' : undefined}

@@ -63,7 +63,16 @@ export default function SessionDetailScreen() {
 
   return (
     <View className="flex-1 bg-surface-light dark:bg-surface-dark">
-      <Stack.Screen options={{ title: formatSessionDate(session.date) }} />
+      <Stack.Screen
+        options={{
+          title: formatSessionDate(session.date),
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()} hitSlop={8}>
+              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
+            </Pressable>
+          ),
+        }}
+      />
 
       <ScrollView contentContainerClassName="px-4 py-4 gap-4" contentInsetAdjustmentBehavior="automatic">
         <GlassCard className="p-5 gap-2">
