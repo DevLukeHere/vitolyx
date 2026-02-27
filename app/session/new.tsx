@@ -317,7 +317,7 @@ export default function NewSessionScreen() {
           {/* Step 4: Review */}
           {step === 3 && (
             <View className="gap-4">
-              <GlassCard className="p-4 gap-3">
+              <GlassCard className="p-5 gap-3">
                 <ThemedText variant="label">Session</ThemedText>
                 <View className="gap-1">
                   <ThemedText variant="subtitle" className="text-base">
@@ -332,7 +332,7 @@ export default function NewSessionScreen() {
                 </View>
               </GlassCard>
 
-              <GlassCard className="p-4 gap-3">
+              <GlassCard className="p-5 gap-3">
                 <ThemedText variant="label">
                   Results ({watchResults.filter((r) => r.value.trim() !== '').length})
                 </ThemedText>

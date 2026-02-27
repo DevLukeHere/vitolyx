@@ -68,7 +68,7 @@ export function HealthMetricCard({ marker, onPress }: Props) {
           className="absolute left-0 top-0 bottom-0"
           style={{ width: 4, backgroundColor: accent }}
         />
-        <View className="p-4 pl-5">
+        <View className="p-5 pl-6">
           <View className="flex-row items-start justify-between mb-3">
             <View className="flex-row items-center gap-3">
               <View

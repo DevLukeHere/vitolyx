@@ -21,7 +21,7 @@ export function DailyTipCard() {
   const tip = TIPS[dayOfYear % TIPS.length];
 
   return (
-    <GlassCard className="p-4">
+    <GlassCard className="p-5">
       <View className="flex-row items-center gap-3 mb-2">
         <View className="w-10 h-10 rounded-full bg-brand-500/15 items-center justify-center">
           <IconSymbol name="lightbulb.fill" size={18} color={Palette.teal} />

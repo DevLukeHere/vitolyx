@@ -17,7 +17,7 @@ type MarkerRowProps = {
 export function MarkerRow({ marker, result, sparklineData, onPress }: MarkerRowProps) {
   return (
     <Pressable onPress={onPress}>
-      <GlassCard className="p-4 gap-3">
+      <GlassCard className="p-5 gap-3">
         <View className="flex-row items-start justify-between">
           <ThemedText variant="label">{marker.shortName}</ThemedText>
           {result && <FlagBadge flag={result.flag} />}

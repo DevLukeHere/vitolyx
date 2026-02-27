@@ -20,7 +20,7 @@ function getHealthLabel(score: number): string {
 export function LatestResultCard({ session, healthScore, onPress }: Props) {
   return (
     <Pressable onPress={onPress} className="px-4 mb-4">
-      <GlassCard className="p-4">
+      <GlassCard className="p-5">
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center gap-1.5 bg-brand-500/15 px-2.5 py-1 rounded-full">
             <View className="w-2 h-2 rounded-full bg-emerald-400" />

@@ -15,7 +15,7 @@ type SessionCardProps = {
 export function SessionCard({ session, onPress, onDelete }: SessionCardProps) {
   return (
     <Pressable onPress={onPress}>
-      <GlassCard className="p-4 flex-row items-center gap-3">
+      <GlassCard className="p-5 flex-row items-center gap-3">
         <View className="w-10 h-10 rounded-xl bg-brand-500/10 items-center justify-center">
           <IconSymbol name="drop.fill" size={18} color={Palette.teal} />
         </View>

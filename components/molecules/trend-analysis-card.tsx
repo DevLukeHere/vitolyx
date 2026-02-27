@@ -32,7 +32,7 @@ export function TrendAnalysisCard({ marker, current, previous }: Props) {
       : 'Your levels have moved further from the optimal range. Consider consulting your doctor.';
 
   return (
-    <GlassCard className="p-4 gap-3">
+    <GlassCard className="p-5 gap-3">
       <View className="flex-row items-center justify-between">
         <ThemedText variant="subtitle" className="text-base">
           Trend Analysis

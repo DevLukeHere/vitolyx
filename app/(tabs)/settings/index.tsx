@@ -84,7 +84,7 @@ export default function SettingsScreen() {
       >
         <View className="gap-2">
           <ThemedText variant="label" className="px-1">Units</ThemedText>
-          <GlassCard className="p-4">
+          <GlassCard className="p-5">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 gap-0.5">
                 <ThemedText variant="body">Imperial units</ThemedText>
@@ -106,7 +106,7 @@ export default function SettingsScreen() {
 
         <View className="gap-2">
           <ThemedText variant="label" className="px-1">Data</ThemedText>
-          <GlassCard className="p-4 gap-3">
+          <GlassCard className="p-5 gap-3">
             <PrimaryButton
               label="Export as JSON"
               variant="ghost"
@@ -122,7 +122,7 @@ export default function SettingsScreen() {
 
         <View className="gap-2">
           <ThemedText variant="label" className="px-1">About</ThemedText>
-          <GlassCard className="p-4 gap-1">
+          <GlassCard className="p-5 gap-1">
             <ThemedText variant="body">Vitolyx</ThemedText>
             <ThemedText variant="caption">
               v0.1.0 · Blood test results tracker

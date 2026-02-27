@@ -66,7 +66,7 @@ export default function SessionDetailScreen() {
       <Stack.Screen options={{ title: formatSessionDate(session.date) }} />
 
       <ScrollView contentContainerClassName="px-4 py-4 gap-4" contentInsetAdjustmentBehavior="automatic">
-        <GlassCard className="p-4 gap-2">
+        <GlassCard className="p-5 gap-2">
           <ThemedText variant="label">Session Info</ThemedText>
           <ThemedText variant="subtitle">
             {formatSessionDate(session.date)}
@@ -90,7 +90,7 @@ export default function SessionDetailScreen() {
                 key={r.id}
                 onPress={() => router.push(`/marker/${r.markerId}`)}
               >
-                <GlassCard className="p-4 flex-row items-center">
+                <GlassCard className="p-5 flex-row items-center">
                   <View className="flex-1 gap-1">
                     <ThemedText variant="body" className="text-sm font-medium">
                       {r.marker.name}

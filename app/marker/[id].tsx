@@ -129,7 +129,7 @@ export default function MarkerDetailScreen() {
               History
             </ThemedText>
             {[...trend].reverse().map((point, i) => (
-              <GlassCard key={i} className="p-4 flex-row items-center gap-3">
+              <GlassCard key={i} className="p-5 flex-row items-center gap-3">
                 <View className="w-10 h-10 rounded-xl bg-gunmetal/10 dark:bg-cloud/5 items-center justify-center">
                   <IconSymbol name="calendar" size={18} color="#888B90" />
                 </View>
