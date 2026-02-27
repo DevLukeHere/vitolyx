@@ -1,4 +1,4 @@
-import { View, useWindowDimensions } from 'react-native';
+import { View, Text, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { ThemedText } from '@/components/atoms/themed-text';
 import { formatChartDate } from '@/lib/utils/date';
@@ -80,7 +80,10 @@ export function TrendChart({ marker, data }: TrendChartProps) {
         yAxisOffset={yOffset}
         maxValue={yTop - yOffset}
         noOfSections={4}
-        rulesColor={isDark ? '#EEEEEE08' : '#22283108'}
+        rulesType="dashed"
+        dashWidth={4}
+        dashGap={4}
+        rulesColor={isDark ? '#EEEEEE20' : '#22283120'}
         spacing={spacing}
         referenceLinesOverChartContent={false}
         showReferenceLine1
@@ -90,6 +93,8 @@ export function TrendChart({ marker, data }: TrendChartProps) {
           dashWidth: 6,
           dashGap: 4,
           thickness: 1,
+          labelText: String(marker.referenceHigh),
+          labelTextStyle: { color: '#ef4444', fontSize: 10, fontWeight: '600', top: -16 },
         }}
         showReferenceLine2
         referenceLine2Position={marker.referenceLow}
@@ -98,6 +103,8 @@ export function TrendChart({ marker, data }: TrendChartProps) {
           dashWidth: 6,
           dashGap: 4,
           thickness: 1,
+          labelText: String(marker.referenceLow),
+          labelTextStyle: { color: '#f59e0b', fontSize: 10, fontWeight: '600', top: -16 },
         }}
         pointerConfig={{
           persistPointer: true,
@@ -116,7 +123,7 @@ export function TrendChart({ marker, data }: TrendChartProps) {
               }}
             />
           ),
-          pointerLabelWidth: 140,
+          pointerLabelWidth: 70,
           pointerLabelHeight: 50,
           autoAdjustPointerLabelPosition: true,
           shiftPointerLabelY: -50,
@@ -128,18 +135,21 @@ export function TrendChart({ marker, data }: TrendChartProps) {
               <View
                 style={{
                   backgroundColor: isDark ? Palette.cloud : Palette.charcoal,
-                  borderRadius: 8,
+                  borderRadius: 4,
                   paddingHorizontal: 10,
                   paddingVertical: 5,
                   alignItems: 'center',
                 }}
               >
-                <ThemedText
-                  variant="mono"
-                  className="text-cloud dark:text-charcoal text-xs font-bold"
+                <Text
+                  style={{
+                    color: isDark ? Palette.charcoal : Palette.cloud,
+                    fontSize: 12,
+                    fontWeight: '800',
+                  }}
                 >
                   {item.value} {data[0]?.unit}
-                </ThemedText>
+                </Text>
               </View>
             );
           },
