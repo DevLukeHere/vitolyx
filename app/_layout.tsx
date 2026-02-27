@@ -7,6 +7,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import * as SystemUI from 'expo-system-ui';
 import { DatabaseProvider } from '@/lib/database/provider';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Palette } from '@/constants/theme';
@@ -51,12 +52,17 @@ function LoadingFallback() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const bg = colorScheme === 'dark' ? Palette.charcoal : Palette.cloud;
+  SystemUI.setBackgroundColorAsync(bg);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? VitoluxDark : VitoluxLight}>
       <Suspense fallback={<LoadingFallback />}>
         <DatabaseProvider>
-          <Stack screenOptions={{ headerShadowVisible: false }}>
+          <Stack screenOptions={{
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: colorScheme === 'dark' ? Palette.charcoal : Palette.cloud },
+          }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="session" options={{ headerShown: false }} />
             <Stack.Screen name="marker" options={{ headerShown: false }} />
