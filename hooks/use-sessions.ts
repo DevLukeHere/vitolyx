@@ -32,8 +32,20 @@ export function useSessions(): UseSessionsReturn {
   };
 }
 
-export function useSession(id: SessionId): AsyncState<TestSession | null> {
+export type UseSessionReturn = AsyncState<TestSession | null> & {
+  update: (patch: Partial<Pick<TestSession, 'date' | 'labName' | 'notes'>>) => Promise<void>;
+};
+
+export function useSession(id: SessionId): UseSessionReturn {
   const db = useSQLiteContext();
   const repo = createSessionRepository(db);
-  return useAsyncData(() => repo.getById(id), [id]);
+  const state = useAsyncData(() => repo.getById(id), [id]);
+
+  return {
+    ...state,
+    async update(patch) {
+      await repo.update(id, patch);
+      state.refetch();
+    },
+  };
 }

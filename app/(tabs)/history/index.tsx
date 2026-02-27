@@ -1,10 +1,7 @@
-import { useState, useMemo } from 'react';
 import { View, ActionSheetIOS, Alert } from 'react-native';
 import { useRouter, useFocusEffect, Stack } from 'expo-router';
-import { subMonths, parseISO } from 'date-fns';
 
 import { SessionList } from '@/components/organisms/session-list';
-import { TimeRangeFilter, type TimeRange } from '@/components/molecules/time-range-filter';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useSessions } from '@/hooks/use-sessions';
 import { useAppStore } from '@/stores/app-store';
@@ -15,32 +12,20 @@ import { Pressable } from 'react-native';
 export default function HistoryScreen() {
   const router = useRouter();
   const { data: sessions, loading, refetch, remove } = useSessions();
-  const [range, setRange] = useState<TimeRange>('All');
 
   useFocusEffect(refetch);
   const searchQuery = useAppStore((s) => s.searchQuery);
   const setSearchQuery = useAppStore((s) => s.setSearchQuery);
 
-  const filtered = useMemo(() => {
-    let result = sessions ?? [];
-
-    if (range !== 'All') {
-      const months = range === '3M' ? 3 : range === '6M' ? 6 : 12;
-      const cutoff = subMonths(new Date(), months);
-      result = result.filter((s) => parseISO(s.date) >= cutoff);
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter((s) =>
-        s.date.includes(q) ||
-        s.labName?.toLowerCase().includes(q) ||
-        s.notes?.toLowerCase().includes(q),
-      );
-    }
-
-    return result;
-  }, [sessions, range, searchQuery]);
+  const filtered = sessions?.filter((s) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      s.date.includes(q) ||
+      s.labName?.toLowerCase().includes(q) ||
+      s.notes?.toLowerCase().includes(q)
+    );
+  }) ?? [];
 
   const handleDelete = (id: string) => {
     if (process.env.EXPO_OS === 'ios') {
@@ -83,10 +68,6 @@ export default function HistoryScreen() {
           ),
         }}
       />
-
-      <View className="px-4 py-3">
-        <TimeRangeFilter selected={range} onChange={setRange} />
-      </View>
 
       <SessionList
         sessions={filtered}
