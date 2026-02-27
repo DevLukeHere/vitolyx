@@ -62,8 +62,6 @@ export default function RootLayout() {
         <DatabaseProvider>
           <Stack screenOptions={themedStackScreenOptions(colorScheme)}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="session" options={{ headerShown: false }} />
-            <Stack.Screen name="marker" options={{ headerShown: false }} />
           </Stack>
         </DatabaseProvider>
       </Suspense>

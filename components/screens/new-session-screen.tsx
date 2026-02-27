@@ -183,7 +183,6 @@ export default function NewSessionScreen() {
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="handled"
         >
-          {/* Step 1: Session details */}
           {step === 0 && (
             <View className="gap-4">
               <Controller
@@ -227,7 +226,6 @@ export default function NewSessionScreen() {
             </View>
           )}
 
-          {/* Step 2: Select markers */}
           {step === 1 && (
             <View className="gap-4">
               <StyledInput
@@ -283,7 +281,6 @@ export default function NewSessionScreen() {
             </View>
           )}
 
-          {/* Step 3: Enter values */}
           {step === 2 && (
             <View className="gap-3">
               {fields.map((field, index) => {
@@ -320,7 +317,6 @@ export default function NewSessionScreen() {
             </View>
           )}
 
-          {/* Step 4: Review */}
           {step === 3 && (
             <View className="gap-4">
               <GlassCard className="p-5 gap-3">
@@ -368,7 +364,6 @@ export default function NewSessionScreen() {
           )}
         </ScrollView>
 
-        {/* Fixed bottom action bar */}
         <View
           className="px-4 pt-3 border-t border-gunmetal/10 dark:border-cloud/5"
           style={{ paddingBottom: Math.max(insets.bottom, 12) }}

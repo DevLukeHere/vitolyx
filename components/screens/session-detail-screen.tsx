@@ -19,7 +19,11 @@ import { Palette } from '@/constants/theme';
 
 type EditModal = { type: 'session' } | { type: 'result'; result: FlaggedResult };
 
-export default function SessionDetailScreen() {
+type Props = {
+  markerPathPrefix?: string;
+};
+
+export default function SessionDetailScreen({ markerPathPrefix = '/marker' }: Props) {
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const router = useRouter();
@@ -33,10 +37,8 @@ export default function SessionDetailScreen() {
   const [modal, setModal] = useState<EditModal | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Result edit state
   const [editValue, setEditValue] = useState('');
 
-  // Session edit state
   const [editDate, setEditDate] = useState('');
   const [editLabName, setEditLabName] = useState('');
   const [editNotes, setEditNotes] = useState('');
@@ -190,7 +192,7 @@ export default function SessionDetailScreen() {
             {results.map((r) => (
               <Pressable
                 key={r.id}
-                onPress={() => router.push(`/marker/${r.markerId}`)}
+                onPress={() => router.push(`${markerPathPrefix}/${r.markerId}` as any)}
               >
                 <GlassCard className="p-5 flex-row items-center">
                   <View className="flex-1 gap-1">
@@ -239,7 +241,6 @@ export default function SessionDetailScreen() {
         )}
       </ScrollView>
 
-      {/* Edit Result Modal */}
       <Modal
         visible={modal?.type === 'result'}
         transparent
@@ -302,7 +303,6 @@ export default function SessionDetailScreen() {
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* Edit Session Modal */}
       <Modal
         visible={modal?.type === 'session'}
         transparent

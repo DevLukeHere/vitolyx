@@ -5,7 +5,7 @@ import { Palette } from '@/constants/theme';
 export default function TabLayout() {
   return (
     <NativeTabs tintColor={Palette.teal}>
-      <NativeTabs.Trigger name="index">
+      <NativeTabs.Trigger name="(dashboard)">
         <NativeTabs.Trigger.Icon
           sf={{ default: 'house', selected: 'house.fill' }}
           md="home"

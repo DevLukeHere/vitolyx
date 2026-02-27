@@ -62,7 +62,7 @@ export default function HistoryScreen() {
             tintColor: Palette.teal,
           },
           headerRight: () => (
-            <Pressable onPress={() => router.push('/session/new')}>
+            <Pressable onPress={() => router.push('/history/session/new')}>
               <IconSymbol name="plus" size={22} color={Palette.teal} />
             </Pressable>
           ),
@@ -71,7 +71,7 @@ export default function HistoryScreen() {
 
       <SessionList
         sessions={filtered}
-        onPress={(id) => router.push(`/session/${id}`)}
+        onPress={(id) => router.push(`/history/session/${id}`)}
         onDelete={handleDelete}
         onRefresh={refetch}
         refreshing={loading}
