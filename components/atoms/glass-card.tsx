@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { GlassView, isGlassEffectAPIAvailable } from 'expo-glass-effect';
+import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { cn } from '@/lib/utils/cn';
 
 type GlassCardProps = {
@@ -8,7 +8,7 @@ type GlassCardProps = {
 };
 
 export function GlassCard({ children, className }: GlassCardProps) {
-  if (isGlassEffectAPIAvailable()) {
+  if (isLiquidGlassAvailable()) {
     return (
       <GlassView
         className={cn('rounded-2xl overflow-hidden border border-white/10', className)}

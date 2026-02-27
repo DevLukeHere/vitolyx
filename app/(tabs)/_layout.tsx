@@ -1,13 +1,13 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
-import { GlassView, isGlassEffectAPIAvailable } from 'expo-glass-effect';
+import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Palette } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-const useGlass = isGlassEffectAPIAvailable();
+const useGlass = isLiquidGlassAvailable();
 
 function TabBarBackground() {
   if (useGlass) {
@@ -15,6 +15,7 @@ function TabBarBackground() {
       <GlassView
         glassEffectStyle="regular"
         style={StyleSheet.absoluteFill}
+        pointerEvents="none"
       />
     );
   }
