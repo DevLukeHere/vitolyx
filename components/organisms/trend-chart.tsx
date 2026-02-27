@@ -14,7 +14,9 @@ type TrendChartProps = {
 export function TrendChart({ marker, data }: TrendChartProps) {
   const isDark = (useColorScheme() ?? 'light') === 'dark';
   const { width: screenWidth } = useWindowDimensions();
-  const chartWidth = Math.min(screenWidth - 80, 360);
+  const chartWidth = screenWidth - 80;
+  const POINT_SPACING = 80;
+  const MIN_SPACING = 40;
 
   if (data.length === 0) {
     return (
@@ -24,10 +26,15 @@ export function TrendChart({ marker, data }: TrendChartProps) {
     );
   }
 
+  const DOT_RADIUS = 4;
+  const axisColor = isDark ? '#393E4640' : '#22283115';
+  const labelColor = isDark ? '#888B90' : Palette.gunmetal;
+
+  const INITIAL_SPACING = 20;
+
   const chartData = data.map((point) => ({
     value: point.value,
     label: formatChartDate(point.date),
-    dataPointText: String(point.value),
   }));
 
   const values = data.map((d) => d.value);
@@ -38,20 +45,27 @@ export function TrendChart({ marker, data }: TrendChartProps) {
   const yOffset = Math.floor(Math.max(0, minVal - padding));
   const yTop = Math.ceil(maxVal + padding);
 
-  const axisColor = isDark ? '#393E4640' : '#22283115';
-  const labelColor = isDark ? '#888B90' : Palette.gunmetal;
+  const spacing = data.length > 1
+    ? Math.max(MIN_SPACING, Math.min(POINT_SPACING, chartWidth / (data.length - 1)))
+    : chartWidth / 2;
+  const scrollable = spacing * (data.length - 1) > chartWidth;
 
   return (
-    <View style={{ overflow: 'hidden' }}>
+    <View>
       <LineChart
+        key={data.length + '-' + data.map((d) => d.date).join()}
         data={chartData}
-        width={chartWidth}
+        width={scrollable ? undefined : chartWidth}
         height={200}
+        overflowTop={40}
+        initialSpacing={INITIAL_SPACING}
+        endSpacing={20}
+        scrollToEnd
         curved
         curveType={1}
         color={Palette.teal}
         dataPointsColor={Palette.teal}
-        dataPointsRadius={4}
+        dataPointsRadius={DOT_RADIUS}
         thickness={2.5}
         areaChart
         startFillColor={Palette.teal}
@@ -67,7 +81,8 @@ export function TrendChart({ marker, data }: TrendChartProps) {
         maxValue={yTop - yOffset}
         noOfSections={4}
         rulesColor={isDark ? '#EEEEEE08' : '#22283108'}
-        spacing={data.length > 1 ? chartWidth / (data.length - 1) : chartWidth / 2}
+        spacing={spacing}
+        referenceLinesOverChartContent={false}
         showReferenceLine1
         referenceLine1Position={marker.referenceHigh}
         referenceLine1Config={{
@@ -85,18 +100,40 @@ export function TrendChart({ marker, data }: TrendChartProps) {
           thickness: 1,
         }}
         pointerConfig={{
+          persistPointer: true,
           pointerStripColor: isDark ? Palette.gunmetal : '#DDDDDD',
           pointerStripWidth: 1,
-          pointerColor: Palette.teal,
-          radius: 6,
-          pointerLabelWidth: 120,
-          pointerLabelHeight: 40,
+          radius: 8,
+          pointerComponent: () => (
+            <View
+              style={{
+                width: 16,
+                height: 16,
+                borderRadius: 8,
+                backgroundColor: Palette.teal,
+                borderWidth: 2.5,
+                borderColor: '#fff',
+              }}
+            />
+          ),
+          pointerLabelWidth: 140,
+          pointerLabelHeight: 50,
+          autoAdjustPointerLabelPosition: true,
+          shiftPointerLabelY: -50,
           activatePointersOnLongPress: false,
           pointerLabelComponent: (items: any) => {
             const item = items?.[0];
             if (!item) return null;
             return (
-              <View className="bg-charcoal dark:bg-cloud rounded-lg px-3 py-1.5 items-center">
+              <View
+                style={{
+                  backgroundColor: isDark ? Palette.cloud : Palette.charcoal,
+                  borderRadius: 8,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  alignItems: 'center',
+                }}
+              >
                 <ThemedText
                   variant="mono"
                   className="text-cloud dark:text-charcoal text-xs font-bold"

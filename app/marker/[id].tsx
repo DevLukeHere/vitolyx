@@ -28,7 +28,7 @@ export default function MarkerDetailScreen() {
   const { data: trend, loading: trendLoading } = useMarkerTrend(markerId);
   const { data: settings } = useSettings();
   const preference = settings?.unitPreference ?? 'metric';
-  const [range, setRange] = useState<TimeRange>('1Y');
+  const [range, setRange] = useState<TimeRange>('All');
 
   const filteredTrend = useMemo(() => {
     if (!trend || range === 'All') return trend ?? [];
