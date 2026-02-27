@@ -1,7 +1,6 @@
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { ThemedText } from '@/components/atoms/themed-text';
-import { GlassCard } from '@/components/atoms/glass-card';
 import { formatChartDate } from '@/lib/utils/date';
 import type { MarkerTrendPoint, BloodMarker } from '@/types/database';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -14,12 +13,14 @@ type TrendChartProps = {
 
 export function TrendChart({ marker, data }: TrendChartProps) {
   const isDark = (useColorScheme() ?? 'light') === 'dark';
+  const { width: screenWidth } = useWindowDimensions();
+  const chartWidth = Math.min(screenWidth - 80, 360);
 
   if (data.length === 0) {
     return (
-      <GlassCard className="p-6 items-center justify-center h-48">
+      <View className="items-center justify-center h-48 bg-gunmetal/5 dark:bg-cloud/5 rounded-2xl">
         <ThemedText variant="caption">No trend data available</ThemedText>
-      </GlassCard>
+      </View>
     );
   }
 
@@ -39,21 +40,22 @@ export function TrendChart({ marker, data }: TrendChartProps) {
   const labelColor = isDark ? '#888B90' : Palette.gunmetal;
 
   return (
-    <GlassCard className="p-4 pb-2">
-      <ThemedText variant="label" className="mb-4">
-        Trend · {data[0]?.unit ?? marker.defaultUnit}
-      </ThemedText>
-
+    <View>
       <LineChart
         data={chartData}
-        width={280}
-        height={180}
+        width={chartWidth}
+        height={200}
         curved
         curveType={1}
         color={Palette.teal}
         dataPointsColor={Palette.teal}
         dataPointsRadius={4}
         thickness={2.5}
+        areaChart
+        startFillColor={Palette.teal}
+        endFillColor={Palette.teal}
+        startOpacity={0.25}
+        endOpacity={0.01}
         xAxisColor={axisColor}
         yAxisColor={axisColor}
         xAxisLabelTextStyle={{ color: labelColor, fontSize: 10 }}
@@ -61,8 +63,8 @@ export function TrendChart({ marker, data }: TrendChartProps) {
         backgroundColor="transparent"
         yAxisOffset={Math.floor(yMin)}
         noOfSections={4}
-        rulesColor={isDark ? '#EEEEEE06' : '#22283106'}
-        spacing={data.length > 1 ? 280 / (data.length - 1) : 140}
+        rulesColor={isDark ? '#EEEEEE08' : '#22283108'}
+        spacing={data.length > 1 ? chartWidth / (data.length - 1) : chartWidth / 2}
         showReferenceLine1
         referenceLine1Position={marker.referenceHigh}
         referenceLine1Config={{
@@ -84,7 +86,7 @@ export function TrendChart({ marker, data }: TrendChartProps) {
           pointerStripWidth: 1,
           pointerColor: Palette.teal,
           radius: 6,
-          pointerLabelWidth: 100,
+          pointerLabelWidth: 120,
           pointerLabelHeight: 40,
           activatePointersOnLongPress: false,
           pointerLabelComponent: (items: any) => {
@@ -103,21 +105,6 @@ export function TrendChart({ marker, data }: TrendChartProps) {
           },
         }}
       />
-
-      <View className="flex-row justify-center gap-6 mt-2">
-        <View className="flex-row items-center gap-1.5">
-          <View className="w-3 h-0.5 bg-red-500 rounded-full" />
-          <ThemedText variant="caption" className="text-xs">
-            High ({marker.referenceHigh})
-          </ThemedText>
-        </View>
-        <View className="flex-row items-center gap-1.5">
-          <View className="w-3 h-0.5 bg-amber-500 rounded-full" />
-          <ThemedText variant="caption" className="text-xs">
-            Low ({marker.referenceLow})
-          </ThemedText>
-        </View>
-      </View>
-    </GlassCard>
+    </View>
   );
 }

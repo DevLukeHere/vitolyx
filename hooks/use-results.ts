@@ -81,6 +81,7 @@ export function useMarkerTrend(markerId: MarkerId): AsyncState<MarkerTrendPoint[
         unit: converted.unit,
         sessionId: r.sessionId,
         flag: computeFlag(converted.value, converted.unit, marker),
+        labName: r.labName,
       };
     });
   }, [markerId, preference]);

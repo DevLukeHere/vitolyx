@@ -111,6 +111,7 @@ export type MarkerTrendPoint = {
   unit: string;
   sessionId: SessionId;
   flag: Flag;
+  labName?: string | null;
 };
 
 export type MarkerWithLatest = BloodMarker & {

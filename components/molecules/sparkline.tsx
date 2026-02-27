@@ -11,11 +11,12 @@ const FLAG_COLOURS: Record<Flag, string> = {
 type SparklineProps = {
   data: number[];
   flag: Flag;
+  color?: string;
   width?: number;
   height?: number;
 };
 
-export function Sparkline({ data, flag, width = 80, height = 32 }: SparklineProps) {
+export function Sparkline({ data, flag, color, width = 80, height = 32 }: SparklineProps) {
   if (data.length < 2) return null;
 
   const min = Math.min(...data);
@@ -37,7 +38,7 @@ export function Sparkline({ data, flag, width = 80, height = 32 }: SparklineProp
         <Polyline
           points={points}
           fill="none"
-          stroke={FLAG_COLOURS[flag]}
+          stroke={color ?? FLAG_COLOURS[flag]}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"

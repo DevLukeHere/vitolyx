@@ -1,27 +1,52 @@
-import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { View, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
+import { useState, useMemo } from 'react';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { subMonths, parseISO } from 'date-fns';
 
 import { ThemedText } from '@/components/atoms/themed-text';
 import { GlassCard } from '@/components/atoms/glass-card';
 import { FlagBadge } from '@/components/atoms/badge';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { TrendChart } from '@/components/organisms/trend-chart';
+import { TrendAnalysisCard } from '@/components/molecules/trend-analysis-card';
+import { TimeRangeFilter, type TimeRange } from '@/components/molecules/time-range-filter';
 import { useMarker } from '@/hooks/use-markers';
 import { useMarkerTrend } from '@/hooks/use-results';
 import { useSettings } from '@/hooks/use-settings';
 import { formatSessionDate } from '@/lib/utils/date';
-import { formatValue } from '@/lib/utils/units';
-import { toMarkerId } from '@/types/database';
+import { toMarkerId, type Flag } from '@/types/database';
 import { Palette } from '@/constants/theme';
+
+const FLAG_LABEL: Record<Flag, string> = {
+  normal: 'Optimal',
+  high: 'High',
+  low: 'Low',
+};
+
+const FLAG_LABEL_COLOR: Record<Flag, string> = {
+  normal: Palette.teal,
+  high: '#f59e0b',
+  low: '#f59e0b',
+};
 
 export default function MarkerDetailScreen() {
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const markerId = toMarkerId(id);
 
+  const router = useRouter();
   const { data: marker, loading: markerLoading } = useMarker(markerId);
   const { data: trend, loading: trendLoading } = useMarkerTrend(markerId);
   const { data: settings } = useSettings();
   const preference = settings?.unitPreference ?? 'metric';
+  const [range, setRange] = useState<TimeRange>('1Y');
+
+  const filteredTrend = useMemo(() => {
+    if (!trend || range === 'All') return trend ?? [];
+    const months = range === '3M' ? 3 : range === '6M' ? 6 : 12;
+    const cutoff = subMonths(new Date(), months);
+    return trend.filter((t) => parseISO(t.date) >= cutoff);
+  }, [trend, range]);
 
   if (markerLoading || trendLoading) {
     return (
@@ -43,84 +68,104 @@ export default function MarkerDetailScreen() {
 
   const displayUnit =
     preference === 'imperial' && marker.altUnit ? marker.altUnit : marker.defaultUnit;
-  const refLow =
-    preference === 'imperial' && marker.altUnit && marker.conversionFactor !== null
-      ? marker.referenceLow * marker.conversionFactor
-      : marker.referenceLow;
-  const refHigh =
-    preference === 'imperial' && marker.altUnit && marker.conversionFactor !== null
-      ? marker.referenceHigh * marker.conversionFactor
-      : marker.referenceHigh;
 
-  const values = trend?.map((t) => t.value) ?? [];
   const latest = trend && trend.length > 0 ? trend[trend.length - 1] : null;
-  const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-  const min = values.length > 0 ? Math.min(...values) : 0;
-  const max = values.length > 0 ? Math.max(...values) : 0;
+  const previous = trend && trend.length > 1 ? trend[trend.length - 2] : null;
+
+  const showInfo = () => {
+    Alert.alert(
+      marker.name,
+      `${marker.description}\n\nReference: ${marker.referenceLow}–${marker.referenceHigh} ${marker.defaultUnit}`,
+    );
+  };
 
   return (
     <View className="flex-1 bg-surface-light dark:bg-surface-dark">
-      <Stack.Screen options={{ title: marker.name }} />
+      <Stack.Screen
+        options={{
+          title: marker.name,
+          headerLeft: () => (
+            <Pressable onPress={() => router.back()} hitSlop={8}>
+              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <Pressable onPress={showInfo} hitSlop={8}>
+              <IconSymbol name="info.circle" size={22} color={Palette.teal} />
+            </Pressable>
+          ),
+        }}
+      />
 
-      <ScrollView contentContainerClassName="px-4 py-4 gap-4" contentInsetAdjustmentBehavior="automatic">
-        <GlassCard className="p-4 gap-2">
-          <ThemedText variant="label">
-            {marker.shortName} · {marker.category.replace('_', ' ')}
-          </ThemedText>
-          <ThemedText variant="title">{marker.name}</ThemedText>
-          {marker.description ? (
-            <ThemedText variant="caption">{marker.description}</ThemedText>
-          ) : null}
-          <ThemedText variant="caption">
-            Reference: {refLow.toFixed(1)}–{refHigh.toFixed(1)} {displayUnit}
-          </ThemedText>
-        </GlassCard>
-
+      <ScrollView contentContainerClassName="px-4 py-4 gap-5" contentInsetAdjustmentBehavior="automatic">
         {latest && (
-          <GlassCard className="p-4 flex-row items-center justify-between">
-            <View>
-              <ThemedText variant="label">Latest</ThemedText>
-              <ThemedText variant="title" className="mt-1">
-                {formatValue(latest.value, latest.unit)}
+          <View className="items-center gap-2">
+            <View className="flex-row items-baseline">
+              <ThemedText variant="title" className="text-5xl">
+                {latest.value % 1 === 0 ? latest.value.toFixed(0) : latest.value.toFixed(1)}
+              </ThemedText>
+              <ThemedText variant="caption" className="text-lg ml-1">
+                {displayUnit}
               </ThemedText>
             </View>
-            <FlagBadge flag={latest.flag} />
-          </GlassCard>
+            <View className="flex-row items-center gap-3">
+              <FlagBadge flag={latest.flag} />
+              <ThemedText variant="caption">{formatSessionDate(latest.date)}</ThemedText>
+            </View>
+          </View>
         )}
 
-        <TrendChart marker={marker} data={trend ?? []} />
+        <TimeRangeFilter selected={range} onChange={setRange} />
 
-        {values.length > 0 && (
-          <View className="flex-row gap-3">
-            {[
-              { label: 'Avg', value: avg },
-              { label: 'Min', value: min },
-              { label: 'Max', value: max },
-            ].map((stat) => (
-              <GlassCard key={stat.label} className="flex-1 p-4 items-center gap-1">
-                <ThemedText variant="label">{stat.label}</ThemedText>
-                <ThemedText variant="subtitle">{stat.value.toFixed(1)}</ThemedText>
-              </GlassCard>
-            ))}
-          </View>
+        <TrendChart marker={marker} data={filteredTrend} />
+
+        {latest && previous && (
+          <TrendAnalysisCard marker={marker} current={latest} previous={previous} />
         )}
 
         {trend && trend.length > 0 && (
           <View className="gap-3">
-            <ThemedText variant="label" className="px-1">History</ThemedText>
+            <ThemedText variant="title" className="text-xl px-1">
+              History
+            </ThemedText>
             {[...trend].reverse().map((point, i) => (
-              <GlassCard key={i} className="p-3.5 flex-row items-center justify-between">
-                <ThemedText variant="caption">
-                  {formatSessionDate(point.date)}
-                </ThemedText>
-                <View className="flex-row items-center gap-2">
-                  <ThemedText variant="mono">
-                    {formatValue(point.value, point.unit)}
+              <GlassCard key={i} className="p-4 flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-gunmetal/10 dark:bg-cloud/5 items-center justify-center">
+                  <IconSymbol name="calendar" size={18} color="#888B90" />
+                </View>
+                <View className="flex-1">
+                  <ThemedText variant="subtitle" className="text-base">
+                    {formatSessionDate(point.date)}
                   </ThemedText>
-                  <FlagBadge flag={point.flag} />
+                  {point.labName ? (
+                    <ThemedText variant="caption" className="text-xs">
+                      {point.labName}
+                    </ThemedText>
+                  ) : null}
+                </View>
+                <View className="items-end gap-0.5">
+                  <ThemedText variant="mono" className="text-base font-semibold">
+                    {point.value % 1 === 0 ? point.value.toFixed(0) : point.value.toFixed(1)}{' '}
+                    {point.unit}
+                  </ThemedText>
+                  <ThemedText
+                    variant="caption"
+                    className="text-xs font-semibold"
+                    style={{ color: FLAG_LABEL_COLOR[point.flag] }}
+                  >
+                    {FLAG_LABEL[point.flag]}
+                  </ThemedText>
                 </View>
               </GlassCard>
             ))}
+
+            {trend.length > 5 && (
+              <Pressable className="items-center py-2">
+                <ThemedText className="text-brand-500 text-sm font-semibold">
+                  View Full History
+                </ThemedText>
+              </Pressable>
+            )}
           </View>
         )}
       </ScrollView>

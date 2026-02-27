@@ -2,7 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { TestResultSchema, type TestResult, type SessionId, type MarkerId, type ResultId } from '@/types/database';
 import { generateId } from '@/lib/utils/id';
 
-function rowToResult(row: Record<string, unknown>): TestResult & { date?: string } {
+function rowToResult(row: Record<string, unknown>): TestResult & { date?: string; labName?: string | null } {
   return {
     ...TestResultSchema.parse({
       id: row.id,
@@ -12,6 +12,7 @@ function rowToResult(row: Record<string, unknown>): TestResult & { date?: string
       unit: row.unit,
     }),
     ...(row.date ? { date: row.date as string } : {}),
+    ...(row.lab_name !== undefined ? { labName: row.lab_name as string | null } : {}),
   };
 }
 
@@ -25,16 +26,16 @@ export function createResultRepository(db: SQLiteDatabase) {
       return rows.map(rowToResult);
     },
 
-    async getByMarker(markerId: MarkerId): Promise<(TestResult & { date: string })[]> {
+    async getByMarker(markerId: MarkerId): Promise<(TestResult & { date: string; labName: string | null })[]> {
       const rows = await db.getAllAsync<Record<string, unknown>>(
-        `SELECT tr.*, ts.date
+        `SELECT tr.*, ts.date, ts.lab_name
          FROM test_results tr
          JOIN test_sessions ts ON ts.id = tr.session_id
          WHERE tr.marker_id = ?
          ORDER BY ts.date ASC`,
         markerId,
       );
-      return rows.map(rowToResult) as (TestResult & { date: string })[];
+      return rows.map(rowToResult) as (TestResult & { date: string; labName: string | null })[];
     },
 
     async getLatestPerMarker(): Promise<(TestResult & { date: string })[]> {
