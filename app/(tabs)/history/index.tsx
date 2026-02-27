@@ -1,5 +1,5 @@
 import { View, ActionSheetIOS, Alert } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, useFocusEffect, Stack } from 'expo-router';
 
 import { SessionList } from '@/components/organisms/session-list';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -12,6 +12,8 @@ import { Pressable } from 'react-native';
 export default function HistoryScreen() {
   const router = useRouter();
   const { data: sessions, loading, refetch, remove } = useSessions();
+
+  useFocusEffect(refetch);
   const searchQuery = useAppStore((s) => s.searchQuery);
   const setSearchQuery = useAppStore((s) => s.setSearchQuery);
 

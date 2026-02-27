@@ -39,6 +39,7 @@ export function SessionList({ sessions, onPress, onDelete, onRefresh, refreshing
       data={sessions}
       keyExtractor={(item) => item.id}
       contentContainerClassName="px-4 gap-3 pb-4"
+      contentInsetAdjustmentBehavior="automatic"
       onRefresh={onRefresh}
       refreshing={refreshing ?? false}
       renderItem={({ item }) => (

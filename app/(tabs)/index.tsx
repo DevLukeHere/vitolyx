@@ -1,5 +1,5 @@
 import { ScrollView, View, Pressable, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/atoms/themed-text';
@@ -14,7 +14,9 @@ import { Palette } from '@/constants/theme';
 export default function DashboardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { data, loading } = useDashboard();
+  const { data, loading, refetch } = useDashboard();
+
+  useFocusEffect(refetch);
   const selectedCategory = useAppStore((s) => s.selectedCategory);
   const setSelectedCategory = useAppStore((s) => s.setSelectedCategory);
 
