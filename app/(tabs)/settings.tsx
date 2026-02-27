@@ -109,7 +109,7 @@ export default function SettingsScreen() {
           <GlassCard className="p-4 gap-1">
             <ThemedText variant="body">Vitolyx</ThemedText>
             <ThemedText variant="caption">
-              v1.0.0 · Blood test results tracker
+              v0.1.0 · Blood test results tracker
             </ThemedText>
           </GlassCard>
         </View>

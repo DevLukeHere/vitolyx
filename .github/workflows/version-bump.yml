@@ -1,0 +1,61 @@
+name: Version Bump
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine bump type
+        id: bump
+        run: |
+          # Check commits since last version bump for feat: prefix
+          COMMITS=$(git log --format='%s' ${{ github.event.before }}..${{ github.sha }} 2>/dev/null || git log --format='%s' -10)
+          if echo "$COMMITS" | grep -qE '^feat(\(.+\))?!?:'; then
+            echo "type=minor" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=patch" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bump version
+        run: |
+          BUMP=${{ steps.bump.outputs.type }}
+          npm version "$BUMP" --no-git-tag-version
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+
+          # Sync version to app.json
+          node -e "
+            const fs = require('fs');
+            const app = JSON.parse(fs.readFileSync('app.json', 'utf8'));
+            app.expo.version = '$NEW_VERSION';
+            fs.writeFileSync('app.json', JSON.stringify(app, null, 2) + '\n');
+          "
+
+          # Update settings screen version string
+          sed -i "s/v[0-9]*\.[0-9]*\.[0-9]* · Blood test results tracker/v${NEW_VERSION} · Blood test results tracker/" app/\(tabs\)/settings.tsx
+
+          echo "Bumped to $NEW_VERSION ($BUMP)"
+
+      - name: Commit and push
+        run: |
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json app.json "app/(tabs)/settings.tsx"
+          git commit -m "chore: bump version to v${NEW_VERSION}"
+          git push
