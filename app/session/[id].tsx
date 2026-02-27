@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { ThemedText } from '@/components/atoms/themed-text';
 import { GlassCard } from '@/components/atoms/glass-card';
 import { FlagBadge } from '@/components/atoms/badge';
+import { HeaderBackButton } from '@/components/atoms/header-back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useSession } from '@/hooks/use-sessions';
 import { useSessionResults } from '@/hooks/use-results';
@@ -66,11 +67,7 @@ export default function SessionDetailScreen() {
       <Stack.Screen
         options={{
           title: formatSessionDate(session.date),
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()} hitSlop={8}>
-              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
-            </Pressable>
-          ),
+          headerLeft: () => <HeaderBackButton />,
         }}
       />
 

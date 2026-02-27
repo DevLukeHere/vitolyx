@@ -11,6 +11,7 @@ import * as SystemUI from 'expo-system-ui';
 import { DatabaseProvider } from '@/lib/database/provider';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Palette } from '@/constants/theme';
+import { themedStackScreenOptions } from '@/lib/utils/screen-options';
 
 const VitoluxDark = {
   ...DarkTheme,
@@ -59,10 +60,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? VitoluxDark : VitoluxLight}>
       <Suspense fallback={<LoadingFallback />}>
         <DatabaseProvider>
-          <Stack screenOptions={{
-            headerShadowVisible: false,
-            contentStyle: { backgroundColor: colorScheme === 'dark' ? Palette.charcoal : Palette.cloud },
-          }}>
+          <Stack screenOptions={themedStackScreenOptions(colorScheme)}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="session" options={{ headerShown: false }} />
             <Stack.Screen name="marker" options={{ headerShown: false }} />

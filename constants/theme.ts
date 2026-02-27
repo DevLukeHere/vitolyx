@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import type { Flag } from '@/types/database';
 
 export const Palette = {
   charcoal: '#222831',
@@ -6,6 +7,18 @@ export const Palette = {
   teal: '#00ADB5',
   cloud: '#EEEEEE',
 } as const;
+
+export const FlagColors: Record<Flag, string> = {
+  normal: Palette.teal,
+  high: '#ef4444',
+  low: '#f59e0b',
+};
+
+export const FlagLabels: Record<Flag, string> = {
+  normal: 'Optimal',
+  high: 'High',
+  low: 'Low',
+};
 
 export const Colors = {
   light: {

@@ -1,11 +1,12 @@
 import { View, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useState, useMemo } from 'react';
-import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
+import { useLocalSearchParams, Stack } from 'expo-router';
 import { subMonths, parseISO } from 'date-fns';
 
 import { ThemedText } from '@/components/atoms/themed-text';
 import { GlassCard } from '@/components/atoms/glass-card';
 import { FlagBadge } from '@/components/atoms/badge';
+import { HeaderBackButton } from '@/components/atoms/header-back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { TrendChart } from '@/components/organisms/trend-chart';
 import { TrendAnalysisCard } from '@/components/molecules/trend-analysis-card';
@@ -14,27 +15,15 @@ import { useMarker } from '@/hooks/use-markers';
 import { useMarkerTrend } from '@/hooks/use-results';
 import { useSettings } from '@/hooks/use-settings';
 import { formatSessionDate } from '@/lib/utils/date';
-import { toMarkerId, type Flag } from '@/types/database';
-import { Palette } from '@/constants/theme';
-
-const FLAG_LABEL: Record<Flag, string> = {
-  normal: 'Optimal',
-  high: 'High',
-  low: 'Low',
-};
-
-const FLAG_LABEL_COLOR: Record<Flag, string> = {
-  normal: Palette.teal,
-  high: '#f59e0b',
-  low: '#f59e0b',
-};
+import { formatNumber } from '@/lib/utils/units';
+import { toMarkerId } from '@/types/database';
+import { FlagColors, FlagLabels, Palette } from '@/constants/theme';
 
 export default function MarkerDetailScreen() {
   const { id: rawId } = useLocalSearchParams<{ id: string }>();
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const markerId = toMarkerId(id);
 
-  const router = useRouter();
   const { data: marker, loading: markerLoading } = useMarker(markerId);
   const { data: trend, loading: trendLoading } = useMarkerTrend(markerId);
   const { data: settings } = useSettings();
@@ -84,11 +73,7 @@ export default function MarkerDetailScreen() {
       <Stack.Screen
         options={{
           title: marker.name,
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()} hitSlop={8}>
-              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
-            </Pressable>
-          ),
+          headerLeft: () => <HeaderBackButton />,
           headerRight: () => (
             <Pressable onPress={showInfo} hitSlop={8}>
               <IconSymbol name="info.circle" size={22} color={Palette.teal} />
@@ -102,7 +87,7 @@ export default function MarkerDetailScreen() {
           <View className="items-center gap-2">
             <View className="flex-row items-baseline">
               <ThemedText variant="title" className="text-5xl">
-                {latest.value % 1 === 0 ? latest.value.toFixed(0) : latest.value.toFixed(1)}
+                {formatNumber(latest.value)}
               </ThemedText>
               <ThemedText variant="caption" className="text-lg ml-1">
                 {displayUnit}
@@ -145,15 +130,15 @@ export default function MarkerDetailScreen() {
                 </View>
                 <View className="items-end gap-0.5">
                   <ThemedText variant="mono" className="text-base font-semibold">
-                    {point.value % 1 === 0 ? point.value.toFixed(0) : point.value.toFixed(1)}{' '}
+                    {formatNumber(point.value)}{' '}
                     {point.unit}
                   </ThemedText>
                   <ThemedText
                     variant="caption"
                     className="text-xs font-semibold"
-                    style={{ color: FLAG_LABEL_COLOR[point.flag] }}
+                    style={{ color: FlagColors[point.flag] }}
                   >
-                    {FLAG_LABEL[point.flag]}
+                    {FlagLabels[point.flag]}
                   </ThemedText>
                 </View>
               </GlassCard>

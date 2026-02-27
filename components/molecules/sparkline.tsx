@@ -1,12 +1,7 @@
 import { View } from 'react-native';
 import Svg, { Polyline } from 'react-native-svg';
+import { FlagColors } from '@/constants/theme';
 import type { Flag } from '@/types/database';
-
-const FLAG_COLOURS: Record<Flag, string> = {
-  low: '#f59e0b',
-  normal: '#22c55e',
-  high: '#ef4444',
-};
 
 type SparklineProps = {
   data: number[];
@@ -38,7 +33,7 @@ export function Sparkline({ data, flag, color, width = 80, height = 32 }: Sparkl
         <Polyline
           points={points}
           fill="none"
-          stroke={color ?? FLAG_COLOURS[flag]}
+          stroke={color ?? FlagColors[flag]}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"

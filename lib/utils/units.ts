@@ -56,3 +56,7 @@ export function formatValue(value: number, unit: string): string {
   const dp = unit === '%' ? 1 : 2;
   return `${value.toFixed(dp)} ${unit}`;
 }
+
+export function formatNumber(v: number): string {
+  return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
+}

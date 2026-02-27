@@ -3,6 +3,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/atoms/themed-text';
+import { EmptyState } from '@/components/atoms/empty-state';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { HealthMetricCard } from '@/components/molecules/health-metric-card';
 import { LatestResultCard } from '@/components/molecules/latest-result-card';
@@ -93,19 +94,11 @@ export default function DashboardScreen() {
                   />
                 ))
               ) : (
-                <View className="items-center justify-center py-20 gap-4">
-                  <View className="w-16 h-16 rounded-2xl bg-brand-500/10 items-center justify-center">
-                    <IconSymbol name="drop.fill" size={28} color={Palette.teal} />
-                  </View>
-                  <View className="items-center gap-1">
-                    <ThemedText variant="subtitle" className="text-center">
-                      No markers yet
-                    </ThemedText>
-                    <ThemedText variant="caption" className="text-center px-12">
-                      Add a session to start tracking your blood markers
-                    </ThemedText>
-                  </View>
-                </View>
+                <EmptyState
+                  icon="drop.fill"
+                  title="No markers yet"
+                  subtitle="Add a session to start tracking your blood markers"
+                />
               )}
             </View>
 

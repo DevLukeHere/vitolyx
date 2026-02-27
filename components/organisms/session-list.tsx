@@ -1,9 +1,7 @@
-import { FlatList, View } from 'react-native';
+import { FlatList } from 'react-native';
 import { SessionCard } from '@/components/molecules/session-card';
-import { ThemedText } from '@/components/atoms/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { EmptyState } from '@/components/atoms/empty-state';
 import type { SessionWithCount } from '@/types/database';
-import { Palette } from '@/constants/theme';
 
 type SessionListProps = {
   sessions: SessionWithCount[];
@@ -13,26 +11,16 @@ type SessionListProps = {
   refreshing?: boolean;
 };
 
-function EmptyState() {
-  return (
-    <View className="items-center justify-center py-20 gap-4">
-      <View className="w-16 h-16 rounded-2xl bg-brand-500/10 items-center justify-center">
-        <IconSymbol name="calendar" size={28} color={Palette.teal} />
-      </View>
-      <View className="items-center gap-1">
-        <ThemedText variant="subtitle" className="text-center">
-          No sessions yet
-        </ThemedText>
-        <ThemedText variant="caption" className="text-center px-12">
-          Tap + to record your first blood test
-        </ThemedText>
-      </View>
-    </View>
-  );
-}
-
 export function SessionList({ sessions, onPress, onDelete, onRefresh, refreshing }: SessionListProps) {
-  if (sessions.length === 0) return <EmptyState />;
+  if (sessions.length === 0) {
+    return (
+      <EmptyState
+        icon="calendar"
+        title="No sessions yet"
+        subtitle="Tap + to record your first blood test"
+      />
+    );
+  }
 
   return (
     <FlatList

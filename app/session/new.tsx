@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/atoms/themed-text';
 import { PrimaryButton } from '@/components/atoms/primary-button';
 import { StyledInput } from '@/components/atoms/text-input';
 import { GlassCard } from '@/components/atoms/glass-card';
+import { HeaderBackButton } from '@/components/atoms/header-back-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { CategoryFilter } from '@/components/organisms/category-filter';
 import { FlagBadge } from '@/components/atoms/badge';
@@ -167,11 +168,7 @@ export default function NewSessionScreen() {
       <Stack.Screen
         options={{
           title: 'New Session',
-          headerLeft: () => (
-            <Pressable onPress={() => router.back()} hitSlop={8}>
-              <IconSymbol name="chevron.left" size={22} color={Palette.teal} />
-            </Pressable>
-          ),
+          headerLeft: () => <HeaderBackButton />,
         }}
       />
       <KeyboardAvoidingView

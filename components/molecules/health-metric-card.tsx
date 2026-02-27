@@ -3,8 +3,9 @@ import { ThemedText } from '@/components/atoms/themed-text';
 import { GlassCard } from '@/components/atoms/glass-card';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Sparkline } from '@/components/molecules/sparkline';
-import type { MarkerWithLatest, MarkerCategory, Flag } from '@/types/database';
-import { Palette } from '@/constants/theme';
+import type { MarkerWithLatest, MarkerCategory } from '@/types/database';
+import { FlagColors } from '@/constants/theme';
+import { formatNumber } from '@/lib/utils/units';
 
 const CATEGORY_ICON: Record<MarkerCategory, string> = {
   lipid_panel: 'flame.fill',
@@ -19,26 +20,16 @@ const CATEGORY_ICON: Record<MarkerCategory, string> = {
   other: 'circle.fill',
 };
 
-const FLAG_ACCENT: Record<Flag, string> = {
-  normal: Palette.teal,
-  high: '#f59e0b',
-  low: '#f59e0b',
-};
-
 type Props = {
   marker: MarkerWithLatest;
   onPress?: () => void;
 };
 
-function formatRef(val: number): string {
-  return val % 1 === 0 ? val.toFixed(0) : val.toFixed(1);
-}
-
 export function HealthMetricCard({ marker, onPress }: Props) {
   const result = marker.latestResult;
   if (!result) return null;
 
-  const accent = FLAG_ACCENT[result.flag];
+  const accent = FlagColors[result.flag];
   const iconName = CATEGORY_ICON[marker.category] ?? 'circle.fill';
   const isNormal = result.flag === 'normal';
 
@@ -53,13 +44,10 @@ export function HealthMetricCard({ marker, onPress }: Props) {
 
   const rangeText =
     refLow < 0.1
-      ? `Normal: < ${formatRef(refHigh)}`
-      : `Normal Range: ${formatRef(refLow)}–${formatRef(refHigh)}`;
+      ? `Normal: < ${formatNumber(refHigh)}`
+      : `Normal Range: ${formatNumber(refLow)}–${formatNumber(refHigh)}`;
 
-  const formattedValue =
-    result.displayValue % 1 === 0
-      ? result.displayValue.toFixed(0)
-      : result.displayValue.toFixed(1);
+  const formattedValue = formatNumber(result.displayValue);
 
   return (
     <Pressable onPress={onPress}>

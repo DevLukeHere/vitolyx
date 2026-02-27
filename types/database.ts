@@ -122,22 +122,6 @@ export type MarkerWithLatest = BloodMarker & {
 
 // ─── Form schemas ───────────────────────────────────────────────────────────
 
-export const NewSessionFormSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
-  labName: z.string().optional(),
-  notes: z.string().optional(),
-});
-
-export const ResultInputSchema = z.object({
-  markerId: z.string().min(1, 'Select a marker'),
-  value: z
-    .string()
-    .min(1, 'Enter a value')
-    .refine((v) => !Number.isNaN(parseFloat(v)), 'Must be a number')
-    .transform(parseFloat),
-  unit: z.string().min(1),
-});
-
 export const CustomMarkerSchema = z.object({
   name: z.string().min(1, 'Name required'),
   shortName: z.string().min(1, 'Short name required').max(6),
@@ -146,6 +130,4 @@ export const CustomMarkerSchema = z.object({
   referenceHigh: z.string().refine((v) => !Number.isNaN(parseFloat(v)), 'Must be a number').transform(parseFloat),
 });
 
-export type NewSessionForm = z.input<typeof NewSessionFormSchema>;
-export type ResultInputForm = z.input<typeof ResultInputSchema>;
 export type CustomMarkerForm = z.input<typeof CustomMarkerSchema>;
